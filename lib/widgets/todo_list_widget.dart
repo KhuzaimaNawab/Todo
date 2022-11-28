@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/provider/todo_provider.dart';
 
-import '../modal/todo.dart';
 import 'todo_widget.dart';
 
 class TodoList extends StatelessWidget {
@@ -8,11 +9,23 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TodoWidget(todo: Todo(
-      createdTime: DateTime.now(),
-      title: 'Walk the Dog 🐕',
-    ),
-      
-    );
+    final provider = Provider.of<TodoProvider>(context);
+    final todos = provider.todos;
+
+    return todos.isEmpty
+        ? const Center(
+            child: Text('No Todos'),
+          )
+        : ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            itemBuilder: (context, index) {
+              final todo = todos[index];
+              return TodoWidget(todo: todo);
+            },
+            separatorBuilder: (context, index) => Container(
+                  height: 8,
+                ),
+            itemCount: todos.length);
   }
 }

@@ -49,7 +49,6 @@ class _HomePageState extends State<HomePage> {
           showDialog(
             context: context,
             builder: (BuildContext context) => const AddTodoDialogWidget(),
-            barrierDismissible: false,
           );
         },
         backgroundColor: Colors.black,
