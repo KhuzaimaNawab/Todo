@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/screens/edit_page.dart';
 import 'package:todo_app/screens/home_page.dart';
 
 import 'provider/todo_provider.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const HomePage(),
+          EditPage.routeName: (context) => const EditPage(),
         },
       ),
     );

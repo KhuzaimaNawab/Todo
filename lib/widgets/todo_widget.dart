@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/model/todo.dart';
+
+import '../Utils/utils.dart';
+import '../provider/todo_provider.dart';
+import '../screens/edit_page.dart';
 
 class TodoWidget extends StatelessWidget {
   final Todo todo;
@@ -11,24 +16,41 @@ class TodoWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Slidable(
-        actionPane: SlidableDrawerActionPane(),
         key: Key(todo.id),
-        actions: [
-          IconSlideAction(
-            color: Colors.green,
-            onTap: () => doNothing,
-            caption: 'Edit',
-            icon: Icons.edit,
-          )
-        ],
-        secondaryActions: [
-          IconSlideAction(
-            color: Colors.red,
-            caption: 'Delete',
-            onTap: () => doNothing,
-            icon: Icons.delete,
-          )
-        ],
+        startActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children: [
+            SlidableAction(
+              onPressed: (context) {
+                final provider =
+                    Provider.of<TodoProvider>(context, listen: false);
+                provider.removeTodo(todo);
+                Util.showSnackbar(context, "Deleted the task");
+              },
+              backgroundColor: const Color(0xFFFE4A49),
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+            ),
+          ],
+        ),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children: [
+            SlidableAction(
+              onPressed: (context) {
+                Navigator.of(context).pushNamed(
+                  EditPage.routeName,
+                  arguments: {'title': todo.title,'desc': todo.description, 'todo':todo},
+                );
+              },
+              backgroundColor: const Color(0xFF7BC043),
+              foregroundColor: Colors.white,
+              icon: Icons.edit,
+              label: 'Edit',
+            ),
+          ],
+        ),
         child: Container(
           color: Colors.white,
           width: double.infinity,
@@ -40,7 +62,13 @@ class TodoWidget extends StatelessWidget {
                 activeColor: Theme.of(context).primaryColor,
                 checkColor: Colors.white,
                 value: todo.isDone,
-                onChanged: (_) {},
+                onChanged: (_) {
+                  final provider =
+                      Provider.of<TodoProvider>(context, listen: false);
+                  provider.toggleCheckbox(todo);
+                  Util.showSnackbar(context,
+                      todo.isDone ? 'Task Completed' : 'Task Mark incomplete');
+                },
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -75,6 +103,4 @@ class TodoWidget extends StatelessWidget {
       ),
     );
   }
-
-  void doNothing(BuildContext context) {}
 }
