@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/widgets/todo_form_widget.dart';
 
 import '../Utils/utils.dart';
-import '../model/todo.dart';
 import '../provider/todo_provider.dart';
-import '../widgets/todo_widget.dart';
 
 class EditPage extends StatefulWidget {
   static const String routeName = '/edit-page';
+  String? title;
+  String? description;
 
-  const EditPage({super.key});
+  EditPage({super.key});
 
   @override
   State<EditPage> createState() => _EditPageState();
@@ -20,16 +20,23 @@ class _EditPageState extends State<EditPage> {
   final formKey = GlobalKey<FormState>();
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final routeArg =
         ModalRoute.of(context)?.settings.arguments as Map<dynamic, dynamic>;
     final argTitle = routeArg['title'];
     final argDescription = routeArg['desc'];
-    final argTodo = routeArg['todo'];
-    final provider = Provider.of<TodoProvider>(context, listen: false);
+    widget.title = argTitle;
+    widget.description = argDescription;
+  }
 
-    String title = argTitle;
-    String description = argDescription;
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<TodoProvider>(context, listen: false);
+    final routeArg =
+        ModalRoute.of(context)?.settings.arguments as Map<dynamic, dynamic>;
+    final argTodo = routeArg['todo'];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Todo'),
@@ -52,16 +59,16 @@ class _EditPageState extends State<EditPage> {
         child: Form(
           key: formKey,
           child: TodoFormWidget(
-            title: title,
-            description: description,
+            title: widget.title.toString(),
+            description: widget.description.toString(),
             onChangedDescription: (String value) {
               setState(() {
-                description = value;
+                widget.description = value;
               });
             },
             onChangedTitle: (String value) {
               setState(() {
-                title = value;
+                widget.title = value;
               });
             },
             onPressed: () {
@@ -72,8 +79,8 @@ class _EditPageState extends State<EditPage> {
               } else {
                 final provider =
                     Provider.of<TodoProvider>(context, listen: false);
-                print(title);
-                provider.updateTodo(argTodo, title, description);
+                provider.updateTodo(argTodo, widget.title.toString(),
+                    widget.description.toString());
               }
               Navigator.of(context).pop();
             },

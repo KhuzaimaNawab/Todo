@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/api/firebase_api.dart';
+import 'package:todo_app/provider/todo_provider.dart';
 
 import '../widgets/add_todo_dialog_widget.dart';
 import '../widgets/completed_task_list.dart';
@@ -25,7 +28,21 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Todo App'),
       ),
-      body: tabs[_selectedIndex],
+      body: StreamBuilder(
+        stream: FirebaseApi.readTodo(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final todo = snapshot.data;
+            final provider = Provider.of<TodoProvider>(context);
+            provider.setTodo(todo!);
+            return tabs[_selectedIndex];
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         backgroundColor: Theme.of(context).primaryColor,

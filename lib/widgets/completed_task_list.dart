@@ -14,7 +14,10 @@ class CompletedTaskList extends StatelessWidget {
 
     return todos.isEmpty
         ? const Center(
-            child: Text('No Completed todos'),
+            child: Text(
+              'No Completed todos',
+              style: TextStyle(fontSize: 20),
+            ),
           )
         : ListView.separated(
             physics: const BouncingScrollPhysics(),
